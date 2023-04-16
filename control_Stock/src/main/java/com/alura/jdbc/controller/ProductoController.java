@@ -2,6 +2,7 @@ package com.alura.jdbc.controller;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -14,28 +15,41 @@ import com.alura.jdbc.factory.ConnectionFactory;
 
 public class ProductoController {
 
-	public int modificar(String nombre, String descripcion, Integer cantidad, Integer id) throws SQLException {
+	public int modificar(String nombre, String descripcion, Integer cantidadProducoto, Integer id) throws SQLException {
 		Connection con = new ConnectionFactory().recuperaConexion();
 		
-		Statement statement = con.createStatement();
+		PreparedStatement statement = con.prepareStatement("UPDATE producto SET "
+			    + " nombre = ? "
+			    + ", descripcion = ? "
+			    + ", cantidad = ? " 
+			    + " WHERE id = ?");
 		
-		statement.execute("UPDATE PRODUCTO SET "
-			    + " NOMBRE = '" + nombre + "'"
-			    + ", DESCRIPCION = '" + descripcion + "'"
-			    + ", CANTIDAD = " + cantidad
-			    + " WHERE ID = " + id);
+		System.out.println(descripcion);
+		
+		statement.setString(1, nombre);
+		statement.setString(2, descripcion);
+		statement.setInt(3, cantidadProducoto);
+		statement.setInt(4, id);
+		
+		System.out.println(statement);
+		
+		
+		statement.execute();
+		
 		int updateCount = statement.getUpdateCount();
+		
 		con.close();
+		
 		return updateCount;
 	}
 
 	public int eliminar(Integer id) throws SQLException {
 		Connection con = new ConnectionFactory().recuperaConexion();
 		
-		Statement statement = con.createStatement();
+		PreparedStatement statement = con.prepareStatement("DELETE FROM producto WHERE id = ?");
+		statement.setInt(1, id);
 		
-		
-		statement.execute("DELETE FROM producto WHERE id = "+ id);
+		statement.execute();
 		
 		int updateCount = statement.getUpdateCount();
 		
@@ -47,9 +61,9 @@ public class ProductoController {
 	public List<Map<String,String>> listar() throws SQLException {
 		Connection con = new ConnectionFactory().recuperaConexion();
 		
-		Statement statement = con.createStatement();
+		PreparedStatement statement = con.prepareStatement("SELECT id,Nombre,Descripcion,Cantidad FROM PRODUCTO");
 		
-		statement.execute("SELECT id,Nombre,Descripcion,Cantidad FROM PRODUCTO");
+		statement.execute();
 		
 		ResultSet resultSet = statement.getResultSet();
 				
@@ -74,11 +88,16 @@ public class ProductoController {
 
     public void guardar(Map<String,String> producto) throws SQLException {
 		Connection con = new ConnectionFactory().recuperaConexion();
-		Statement statement = con.createStatement();
 		
-		statement.execute("INSERT INTO PRODUCTO (nombre,descripcion,cantidad) "+" VALUES('"+ producto.get("NOMBRE") +"', '"+ producto.get("DESCRIPCION")+"', "+ producto.get("CANTIDAD")+")",Statement.RETURN_GENERATED_KEYS);
+		PreparedStatement preparedStatement = con.prepareStatement("INSERT INTO PRODUCTO (nombre,descripcion,cantidad) VALUES(?,?,?)",Statement.RETURN_GENERATED_KEYS);
 		
-		ResultSet resultset = statement.getGeneratedKeys();
+		preparedStatement.setString(1, producto.get("NOMBRE"));
+		preparedStatement.setString(2, producto.get("DESCRIPCION"));
+		preparedStatement.setInt(3, Integer.valueOf(producto.get("CANTIDAD")));
+		
+		preparedStatement.execute();
+		
+		ResultSet resultset = preparedStatement.getGeneratedKeys();
 		
 		while(resultset.next()) {
 			System.out.println(String.format("Fue inserta el producto de ID %d", resultset.getInt(1)));

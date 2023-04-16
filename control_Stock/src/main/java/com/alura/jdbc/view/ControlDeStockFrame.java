@@ -189,7 +189,8 @@ public class ControlDeStockFrame extends JFrame {
     	                String nombre = (String) modelo.getValueAt(tabla.getSelectedRow(), 1);
     	                String descripcion = (String) modelo.getValueAt(tabla.getSelectedRow(), 2);
     	                Integer cantidad = Integer.valueOf(modelo.getValueAt(tabla.getSelectedRow(), 3).toString());
-
+    	                System.out.println(descripcion);
+    	                
     	                int filasModificadas;
 
     	                try {
