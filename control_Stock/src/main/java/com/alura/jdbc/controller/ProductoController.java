@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.alura.jdbc.factory.ConnectionFactory;
+import com.alura.jdbc.modelo.Producto;
 
 public class ProductoController {
 
@@ -88,13 +89,11 @@ public class ProductoController {
 		}
 	}
 
-    public void guardar(Map<String,String> producto) throws SQLException {
-    	String nombre = producto.get("NOMBRE");
-    	String descripcion = producto.get("DESCRIPCION");
-    	Integer cantidad = Integer.valueOf(producto.get("CANTIDAD"));
+    public void guardar(Producto producto) throws SQLException {
+    	String nombre = producto.getNombre();
+    	String descripcion = producto.getDescripcion();
+    	Integer cantidad = producto.getCantidad();
     	
-    	//cantidad maximaque s epuede guardar en un stack
-    	Integer cantidadMaximo = 50;
     	
     	final Connection con = new ConnectionFactory().recuperaConexion();
     	try(con){
@@ -103,14 +102,7 @@ public class ProductoController {
     		final PreparedStatement preparedStatement = con.prepareStatement("INSERT INTO PRODUCTO (nombre,descripcion,cantidad) VALUES(?,?,?)",Statement.RETURN_GENERATED_KEYS);
     		
     		try(preparedStatement){
-        			do {
-        				int cantidadParaGuardar = Math.min(cantidad, cantidadMaximo);
-        				
-        				EjecutaRegistro(nombre, descripcion, cantidadParaGuardar, preparedStatement);
-        				
-        				cantidad-=cantidadParaGuardar;
-        				System.out.println(cantidad);
-        			}while(cantidad>0);
+        			EjecutaRegistro(producto, preparedStatement);
         			con.commit();
         		}catch(Exception e) {
         			con.rollback();
@@ -118,17 +110,18 @@ public class ProductoController {
     	}
 	}
 
-	private void EjecutaRegistro(String nombre, String descripcion, Integer cantidad, PreparedStatement preparedStatement)
+	private void EjecutaRegistro(Producto producto, PreparedStatement preparedStatement)
 		throws SQLException {
-		preparedStatement.setString(1, nombre);
-		preparedStatement.setString(2, descripcion);
-		preparedStatement.setInt(3, cantidad);
+		preparedStatement.setString(1, producto.getNombre());
+		preparedStatement.setString(2, producto.getDescripcion());
+		preparedStatement.setInt(3, producto.getCantidad());
 		
 		preparedStatement.execute();
 		final ResultSet resultset = preparedStatement.getGeneratedKeys();
 		try(resultset){
 			while(resultset.next()) {
-				System.out.println(String.format("Fue inserta el producto de ID %d", resultset.getInt(1)));
+				producto.setId(resultset.getInt(1));
+				System.out.println(String.format("Fue inserta el producto %s", producto ));
 			}	
 		}
 		
