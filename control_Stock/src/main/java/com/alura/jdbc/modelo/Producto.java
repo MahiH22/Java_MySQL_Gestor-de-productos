@@ -12,6 +12,13 @@ public class Producto {
 		this.cantidad=cantidad;
 	}
 
+	public Producto(int id, String nombre, String descripcion, Integer cantidad) {
+		this.id=id;
+		this.nombre=nombre;
+		this.descripcion=descripcion;
+		this.cantidad=cantidad;
+	}
+
 	public String getNombre() {
 		return nombre;
 	}
@@ -28,7 +35,9 @@ public class Producto {
 		this.id=id;
 		
 	}
-	
+	public Integer getID() {
+		return this.id;
+	}
 	@Override
 	public String toString() {
 		
