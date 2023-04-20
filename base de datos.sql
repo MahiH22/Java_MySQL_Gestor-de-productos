@@ -11,5 +11,13 @@ cantidad INT NOT NULL DEFAULT 0,
 PRIMARY KEY(id)
 )ENGINE=InnoDB;
 
-insert into producto(nombre,descripcion,cantidad) values ('Mesa','mesa de 4 lugares',10)	1 row(s) affected	0.000 sec
-insert into producto(nombre,descripcion,cantidad) values ('Celular','Celular Samsung',50)	1 row(s) affected	0.000 sec
+CREATE TABLE CATEGORIA(
+id INT auto_increment,
+nombre varchar(50) NOT NULL,
+PRIMARY KEY(id)
+)engine=InnoDB
+
+INSERT INTO `control_stock`.`categoria` (`nombre`) VALUES ('Muebles');
+INSERT INTO `control_stock`.`categoria` (`nombre`) VALUES ('Tecnologia');
+INSERT INTO `control_stock`.`categoria` (`nombre`) VALUES ('Cocina');
+INSERT INTO `control_stock`.`categoria` (`nombre`) VALUES ('Zapatillas');
